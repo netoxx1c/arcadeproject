@@ -1,11 +1,9 @@
 import arcade
 
-# Задаём размер окна
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 SCREEN_TITLE = "Простая отрисовка изображения с управляемым спрайтом"
 
-# Скорость движения спрайта
 PLAYER_MOVEMENT_SPEED = 20
 
 class Player(arcade.Sprite):
