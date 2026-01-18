@@ -2,7 +2,7 @@ import arcade
 
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
-SCREEN_TITLE = "Простая отрисовка изображения с управляемым спрайтом"
+SCREEN_TITLE = "project"
 
 PLAYER_MOVEMENT_SPEED = 20
 
