@@ -1,10 +1,63 @@
 import arcade
 
+
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
-SCREEN_TITLE = "project"
-
+SCREEN_TITLE = "Проект"
 PLAYER_MOVEMENT_SPEED = 20
+
+class MenuView(arcade.View):
+    def __init__(self):
+        super().__init__()
+        self.background_color = arcade.color.BLUE_GRAY
+        
+    def on_draw(self):
+        self.clear()
+        arcade.draw_text("Главное Меню",
+                         self.window.width / 2,
+                         self.window.height / 2 + 50,
+                         arcade.color.WHITE,
+                         font_size=40,
+                         anchor_x="center")
+        arcade.draw_text("Нажми SPACE, чтобы начать!",
+                         self.window.width / 2,
+                         self.window.height / 2 - 50,
+                         arcade.color.WHITE,
+                         font_size=20,
+                         anchor_x="center")
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.SPACE:
+            game_view = GameView()
+            self.window.show_view(game_view)
+
+
+class PauseView(arcade.View):
+    def __init__(self, game_view):
+        super().__init__()
+        self.game_view = game_view
+        self.background_texture = arcade.load_texture("ddd.png")
+
+    def on_draw(self):
+        self.clear()
+        arcade.draw_texture_rect(self.background_texture, arcade.rect.XYWH(self.width // 2, self.height // 2, self.width, self.height))
+        arcade.draw_text("Пауза",
+                         self.window.width / 2,
+                         self.window.height / 2,
+                         arcade.color.WHITE,
+                         font_size=40,
+                         anchor_x="center")
+        arcade.draw_text("Нажми SPACE, чтобы продолжить",
+                         self.window.width / 2,
+                         self.window.height / 2 - 50,
+                         arcade.color.WHITE,
+                         font_size=20,
+                         anchor_x="center")
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.SPACE:
+            self.window.show_view(self.game_view)
+
 
 class Player(arcade.Sprite):
     def __init__(self):
@@ -14,11 +67,9 @@ class Player(arcade.Sprite):
         self.center_y = SCREEN_HEIGHT // 2
 
 
-class MyGame(arcade.Window):
-    def __init__(self, width, height, title):
-        super().__init__(width, height, title)
-        self.w = width
-        self.h = height
+class GameView(arcade.View):
+    def __init__(self):
+        super().__init__()
         self.background_texture = arcade.load_texture("ddd.png")
         self.player = Player()
         self.player_list = arcade.SpriteList()
@@ -30,17 +81,16 @@ class MyGame(arcade.Window):
 
     def on_draw(self):
         self.clear()
-        arcade.draw_texture_rect(self.background_texture, arcade.rect.XYWH(self.w // 2, self.h // 2, self.w, self.h))
+        arcade.draw_texture_rect(self.background_texture, arcade.rect.XYWH(self.width // 2, self.height // 2, self.width, self.height))
         self.player_list.draw()
+
     def on_update(self, delta_time):
         self.player.change_x = 0
         self.player.change_y = 0
-
         if self.left_pressed and not self.right_pressed:
             self.player.change_x = -PLAYER_MOVEMENT_SPEED
         elif self.right_pressed and not self.left_pressed:
             self.player.change_x = PLAYER_MOVEMENT_SPEED
-
         if self.up_pressed and not self.down_pressed:
             self.player.change_y = PLAYER_MOVEMENT_SPEED
         elif self.down_pressed and not self.up_pressed:
@@ -50,7 +100,6 @@ class MyGame(arcade.Window):
             self.player.left = 0
         elif self.player.right > SCREEN_WIDTH - 1:
             self.player.right = SCREEN_WIDTH - 1
-
         if self.player.bottom < 0:
             self.player.bottom = 0
         elif self.player.top > SCREEN_HEIGHT - 1:
@@ -65,6 +114,9 @@ class MyGame(arcade.Window):
             self.left_pressed = True
         elif key == arcade.key.D:
             self.right_pressed = True
+        elif key == arcade.key.ESCAPE:
+            pause_view = PauseView(self)
+            self.window.show_view(pause_view)
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W:
@@ -75,6 +127,13 @@ class MyGame(arcade.Window):
             self.left_pressed = False
         elif key == arcade.key.D:
             self.right_pressed = False
+
+
+class MyGame(arcade.Window):
+    def __init__(self, width, height, title):
+        super().__init__(width, height, title)
+        menu_view = MenuView()
+        self.show_view(menu_view)
 
 
 def main():
